@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Schulplaner</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Speichert die Daten im Browser (localStorage) dieses Geräts, dauerhaft bis der Browser-Speicher geleert wird -->
+<script>
+  window.storage = {
+    get: async (key, shared) => {
+      try {
+        const raw = localStorage.getItem("schulplaner:" + key);
+        if (raw === null) return null;
+        return { key, value: raw, shared: !!shared };
+      } catch (e) { return null; }
+    },
+    set: async (key, value, shared) => {
+      try {
+        localStorage.setItem("schulplaner:" + key, value);
+        return { key, value, shared: !!shared };
+      } catch (e) { return null; }
+    },
+    delete: async (key, shared) => {
+      try {
+        localStorage.removeItem("schulplaner:" + key);
+        return { key, deleted: true, shared: !!shared };
+      } catch (e) { return null; }
+    },
+    list: async (prefix, shared) => {
+      try {
+        const p = "schulplaner:" + (prefix || "");
+        const keys = Object.keys(localStorage).filter((k) => k.startsWith(p)).map((k) => k.slice("schulplaner:".length));
+        return { keys, prefix: prefix || undefined, shared: !!shared };
+      } catch (e) { return null; }
+    },
+  };
+</script>
+
+<script type="text/babel" data-presets="react" src="app.jsx"></script>
+</body>
+</html>
